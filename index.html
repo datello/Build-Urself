@@ -1223,6 +1223,16 @@ wert:{id:'ino',n:'Ino',t:'Meisterin der Menschenkenntnis',ini:'IN',c:'#e98bb5',
     ['u',["Dann legen wir los."]]
   ]}
 };
+const MASTER_DESC={nacht:"Gaara ist Kazekage von Sunagakure. Er hat jahrelang kaum geschlafen – deshalb weiß niemand besser als er, was Schlaf wert ist.",
+  eisen:"Rock Lee konnte nie Ninjutsu. Also hat er seinen Körper so lange trainiert, bis er trotzdem einer der Besten wurde. Reine Disziplin.",
+  atem:"Might Guy ist Meister des Taijutsu, Rock Lees Lehrer und Kakashis selbsternannter ewiger Rivale. Laut, aber sein Herz ist aus Stahl.",
+  treibstoff:"Tsunade ist die beste Medizinerin, die ich kenne, ehemalige Hokage und Sannin wie ich. Und sie schlägt härter als jeder andere.",
+  klinge:"Kakashi war Hokage, ist ein Genie – und kommt grundsätzlich zu spät. Er liest übrigens meine Bücher. Ein Mann mit Geschmack.",
+  gedaechtnis:"Shikamaru ist der klügste Stratege, den ich kenne. Er tut so, als wäre ihm alles zu anstrengend – und plant dabei zehn Züge voraus.",
+  sturm:"Naruto ist mein Schüler. Er war lange allein und voller Wut – und hat trotzdem nie aufgegeben. Ich bin stolz auf ihn.",
+  klang:"Killer B ist Kämpfer, Rapper und Partner des Achtschwänzigen. Er redet in Reimen. Man gewöhnt sich dran. Fast.",
+  wert:"Ino kann Menschen lesen wie ein offenes Buch, und ihre Familie führt einen Blumenladen. Wenn es um Kunden geht, frag sie."};
+for(const k in MASTER_DESC)MASTERS[k].desc=MASTER_DESC[k];
 function masterOf(arcId){return MASTERS[arcId]||JIRAIYA}
 
 /* ==== 30_engine.js ==== */
@@ -1856,7 +1866,7 @@ SHEETS.settings=()=>{
     ${ui.pwMsg?`<p class="small ice" role="status">${esc(ui.pwMsg)}</p>`:''}<button class="btn btn-ghost" type="submit">Passwort ändern</button>
     <button type="button" class="link" data-a="lock-now">App jetzt sperren</button></form>
   <section class="win stack"><div class="win-h">Backup</div>
-    <p class="small muted">Dein Fortschritt liegt in diesem Browser. Kopiere ab und zu den Backup-Code in deine Notizen – damit holst du alles zurück oder ziehst auf ein neues Handy um.</p>
+    <p class="small muted">Dein Fortschritt liegt nur auf diesem Gerät. Kopiere ab und zu den Backup-Code in deine Notizen – damit holst du alles zurück oder ziehst auf ein neues Handy um.</p>
     ${ui.backup==='show'?`<textarea id="backup-out" readonly style="min-height:110px;font-family:var(--f-mono);font-size:11px">${esc(encodeBackup())}</textarea><div class="row wrap"><button class="btn btn-ice" data-a="backup-copy">Kopieren</button><button class="btn btn-ghost" data-a="backup-close">Schließen</button></div>`
      :ui.backup==='import'?`<form id="importform" class="stack"><textarea id="backup-in" style="min-height:110px" aria-label="Backup-Code"></textarea><p class="note">Das ersetzt deinen aktuellen Fortschritt.</p><div class="row wrap"><button class="btn btn-ice" type="submit">Einspielen</button><button class="btn btn-ghost" type="button" data-a="backup-close">Abbrechen</button></div></form>`
      :`<div class="row wrap"><button class="btn btn-ghost" data-a="backup-show">Backup-Code erstellen</button><button class="btn btn-ghost" data-a="backup-import">Backup einspielen</button></div>`}
@@ -2359,7 +2369,7 @@ const INT=[
  ['insult',8,'halt die klappe|du nervst|nervig|bloed|dumm|idiot|alter sack|perversling|ero'],
  ['greet',5,'hallo|hi|hey|servus|moin|guten morgen|guten abend|guten tag|yo|na|hallo sensei|huhu'],
  ['d:nacht',19,'schlaf|einschlafen|aufstehen|wecker|nachts|bett|ausschlafen|aufwachen'],
- ['d:eisen',19,'kraft|muskel|krafttraining|gym|fitnessstudio|liegestuetz|kniebeuge|hantel|pump|staerker|klimmzug'],
+ ['d:eisen',19,'training|trainieren|workout|sport|kraft|muskel|krafttraining|gym|fitnessstudio|liegestuetz|kniebeuge|hantel|pump|staerker|klimmzug'],
  ['d:atem',19,'laufen|joggen|ausdauer|cardio|kondition|rennen|schritte|puste|radfahren|schwimmen'],
  ['d:treibstoff',19,'essen|ernaehrung|protein|eiweiss|abnehmen|zunehmen|kalorien|hunger|wasser trinken|zucker|diaet|fastfood'],
  ['d:klinge',19,'fokus|konzentr|ablenk|handy|social media|instagram|tiktok|youtube|deep work|zocken|bildschirm'],
@@ -2443,7 +2453,7 @@ function chatReply(raw){
       if(!q){say('grin',c.cleared?"Keine Lust? Du hast heute doch schon alles erledigt. Leg die Füße hoch, du hast es dir verdient.":"Heute steht nichts an. Dann genieß die Pause ohne schlechtes Gewissen.");break}
       if(again){say('serious',P('nomotAgain',CT.nomotAgain),[{l:'Zu den Quests',x:'tab',v:'today'}]);sug=["Okay, ich fang an.","Ich bin wirklich krank."];break}
       say('grin',P('nomot',CT.nomot));
-      const dq=I.doms.length?c.open.find(x=>(ARC_Q[I.doms[0]]||[]).includes(x.lib))||q:q;
+      const dq=I.doms.length?c.open.find(x=>(ARC_Q[I.doms[0]]||[]).includes(x.lib))||c.open.find(x=>AI_[I.doms[0]]&&x.stat===AI_[I.doms[0]].stat)||q:q;
       say('neutral',fill(pickSeen('c:nomotRule',CT.nomotRule),{q:dq.n}),[{l:'Zu den Quests',x:'tab',v:'today'}]);
       if(rand()<.6)say('neutral',P('wisdom',CT.wisdom));
       sug=["Okay, ich fang an.","Ich hab trotzdem keine Lust."];break}
@@ -2476,9 +2486,9 @@ function chatReply(raw){
       say('grin',c.comps?`Kompetenzen erworben: ${c.comps} von ${ARCS.length}.`:"Kompetenzen hast du noch keine. Aber das ändert sich.");break}
     case 'masters':{
       const id=I.master;if(!id){say('neutral',"Meine Freunde sind Meister in ihren Bereichen: Gaara, Rock Lee, Might Guy, Tsunade, Kakashi, Shikamaru, Naruto, Killer B und Ino. Frag mich nach einem.");break}
-      const M=masterOf(id),a=AI_[id];say('grin',M.about[0]);say('neutral',`Bei ${M.n} lernst du ${a.comp} – in ${a.n}.${AS().done[id]?' Den Arc hast du schon gemeistert.':AS().active===id?' Das ist gerade dein Arc.':''}`,[{l:'Arc ansehen',x:'arc-view',v:id}]);
+      const M=masterOf(id),a=AI_[id];say('grin',M.desc||M.about[0]);say('neutral',`Bei ${M.n} lernst du ${a.comp} – in ${a.n}.${AS().done[id]?' Den Arc hast du schon gemeistert.':AS().active===id?' Das ist gerade dein Arc.':''}`,[{l:'Arc ansehen',x:'arc-view',v:id}]);
       if(id==='treibstoff')say('laugh',"Und sag ihr nicht, dass ich was über sie erzählt habe.");
-      if(id==='sturm')say('proud',"Er ist übrigens mein Schüler. Ich bin ein bisschen stolz. Sehr.");break}
+break}
     case 'about':if(!S.flags.chatAbout){S.flags.chatAbout=1;say('proud',CT.about[0]);say('grin',CT.about[2]);sug=["Erzähl mir einen Witz.","Was steht heute an?"];break}say('proud',P('about',CT.about));if(rand()<.5)say('grin',P('about',CT.about));sug=["Erzähl mir einen Witz.","Was steht heute an?"];break;
     case 'tip':{if(I.doms.length){domainTip(I.doms[0],say);sug=["Noch einen.","Was steht heute an?"];S.chatLast={i:'tip',at:Date.now(),dom:I.doms[0]};ui.chatSug=sug;return out}else{say('neutral',P('wisdom',CT.wisdom));const cards=Object.keys(S.cards);const pool=cards.length?cards.map(id=>CI[id]).filter(Boolean):CARDS;const cd=pool[Math.floor(rand()*pool.length)];if(cd)say('grin',`Und aus deiner Sammlung: „${cd.t}“ – ${cd.x}`)}sug=["Noch einen.","Tipp zum Schlafen","Tipp zum Lernen"];break}
     case 'joke':say('laugh',P('jokes',CT.jokes));sug=["Noch einer!","Okay, zurück an die Arbeit."];break;
@@ -2601,6 +2611,10 @@ function vvFix(){try{const bar=document.querySelector('.cbar');const vv=window.v
   document.body.classList.toggle('kbd',kb>80);if(bar)bar.style.bottom=kb>80?kb+'px':''}catch(e){}}
 try{if(window.visualViewport){window.visualViewport.addEventListener('resize',vvFix);window.visualViewport.addEventListener('scroll',vvFix)}}catch(e){}
 AFTER.push(vvFix);
+
+/* Chat öffnet immer bei der neuesten Nachricht */
+const _tabAct=ACTIONS.tab;
+ACTIONS.tab=ds=>{_tabAct(ds);if(ds.t==='sensei')requestAnimationFrame(()=>window.scrollTo(0,document.documentElement.scrollHeight))};
 
 /* ==== 99_boot.js ==== */
 
